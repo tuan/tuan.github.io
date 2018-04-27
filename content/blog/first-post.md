@@ -1,13 +1,12 @@
 ---
 title: "First Post"
-date: 2018-04-24T21:16:51-07:00
-draft: true
+date: 2018-04-27T21:16:51-07:00
 ---
 
 This is my first post.
 Tiếng Việt. Hôm nay là một ngày đẹp trời.
 
-Tôi muốn kiểm tra xem tiếng viếtj như thế nào ở đây.
+Testing syntax highlighting
 
 ```javascript
 function hello() {
