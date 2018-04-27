@@ -1,0 +1,31 @@
+# https://docs.travis-ci.com/user/deployment/pages/
+# https://docs.travis-ci.com/user/languages/python/
+language: python
+python:
+    - "3.6"
+
+before_script:
+    - git config --global user.name 'Tuan Nguyen'
+    - git config --global user.email 'tuan-tmp@outlook.com'
+install:
+    - wget https://github.com/gohugoio/hugo/releases/download/v0.40.1/hugo_0.40.1_Linux-64bit.deb
+    - sudo dpkg -i hugo*.deb
+    - pip install Pygments
+    - rm -rf docs 2> /dev/null
+script:
+    - hugo
+
+after_success:
+    - mkdir .deploy                   # Create a folder to use for teh pages branch
+    - cd .deploy
+    - git clone --depth 1 --branch master --single-branch $DEPLOY_REPO . || (git init && git remote add -t master origin $DEPLOY_REPO)
+    - rm -rf ./*                      # Clear old verion
+    - cp -r ../docs/* ./             # Copy over files for new version
+    - git add -A .          
+    - git commit -m 'Site updated'    # Make a new commit for new version
+    - git branch -m master
+    - git push -q -u origin master  # Push silently so we don't leak information
+
+branches:
+  only:
+    - code
