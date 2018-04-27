@@ -21,6 +21,7 @@ after_success:
     - git clone --depth 1 --branch master --single-branch $DEPLOY_REPO . || (git init && git remote add -t master origin $DEPLOY_REPO)
     - rm -rf ./*                      # Clear old verion
     - cp -r ../docs/* ./             # Copy over files for new version
+    - cp ../CNAME ./
     - git add -A .          
     - git commit -m 'Site updated'    # Make a new commit for new version
     - git branch -m master
