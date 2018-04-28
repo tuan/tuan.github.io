@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="generator" content="Hugo 0.40.1" />
+		<title>Pass Data From Hosting Environment to Owin Startup Class - Tuan</title>
+
+		<meta name="description" content="The diagram bellow, from MSDN Magazine, seems to suggest that there are ways to exchange data between Server and Owin Application. However, I have not found any official documentation/tutorials on how that can be accomplished. I found this discussion while searching for this topic on stackoverflow. The answer given there is only for self-hosted scenario, where you can call WebApp.Start method to manually load the Startup class and provide custom data.">
+
+
+		
+
+		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+
+		
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/ocean.min.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/go.min.js"></script>
+		
+		
+
+		
+		<link rel="stylesheet" href="/css/ui.min.css"/>
+		
+		<style>
+	a { color: #267A9E; }
+	blockquote {
+		border-left-color: #267A9E;
+		border-right-color: #267A9E; }
+	.bar a:hover {
+		color: #267A9E;
+		text-decoration: none; }
+	.sep {
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		margin-left:0;
+		width: 24rem;
+		border-top: 2px solid #267A9E; }
+</style>
+
+	</head>
+
+<body>
+<header class="container no-print">
+	<div class="u-header">
+		<nav class="bar">
+	<ul><li>
+			<a href="/">
+				<img class="icon-text" src="/img/prev.svg"/>
+			</a>
+		</li></ul>
+</nav>
+
+	</div>
+</header>
+<main class="container">
+
+<article>
+	<header><hgroup id="brand">
+	<h1>Pass Data From Hosting Environment to Owin Startup Class</h1>
+	<h5>
+		
+		<time datetime="2018-04-27 20:18:28 -0700 -0700">Apr 27, 2018</time>
+		<span class="no-print">
+			<span>
+	</h5>
+	
+</hgroup>
+<hr class="sep" />
+</header>
+	<p>The diagram bellow, from MSDN Magazine, seems to suggest that there are ways to exchange data between Server and Owin Application. However, I have not found any official documentation/tutorials on how that can be accomplished.
+<img src="http://i.imgur.com/3R4ms0i.png" alt="msdn magazine" /></p>
+
+<p>I found <a href="http://stackoverflow.com/questions/15511651/pass-a-parameter-to-owin-host">this discussion</a> while searching for this topic on <a href="http://stackoverflow.com">stackoverflow</a>. The answer given there is only for self-hosted scenario, where you can call <code>WebApp.Start</code> method to manually load the Startup class and provide custom data. For ASP.NET hosted scenario, I haven&rsquo;t found a way to accomplish the same thing. The Startup class seems to be required to have a parameter-less constructor, and Katana will invoke that constructor to instantiate the class, then execute the Configuration method.</p>
+
+<p>Ultimately, what I want to achieve in my projects is to have an implementation of Owin Application that is truly portable.It should work without any modification no matter where it&rsquo;s hosted, be it in ASP.NET or in a console process.For that, I think data that is server-dependent should be instantiated on the server side, then pass to the Startup class where the Owin pipeline is configured.</p>
+
+<!-- more -->
+
+<p>Currently, in projects I&rsquo;m working on, I create a static holder class to store data that are initialized when server starts. When Startup.Configuration is invoked, I will read data from that static holder. I don&rsquo;t know if it&rsquo;s a recommended way, but it&rsquo;s not too bad an approach. Because there should be only once instance of the server running, so server-dependent data could be considered singletons. These data could be instantiated once in <code>Global.asax &gt; Application_Start</code>, and be disposed, if needed, in <code>Global.asax &gt; Application_End</code>.</p>
+
+<p>I&rsquo;ve created a sample app to demonstrate this approach. It this app, just for the sake of an example, I need to register an server-dependent Logger with my custom DI container, and then in my Startup class, I will get the container, and resolves that instance of the Logger to use through out the pipeline.</p>
+
+<ul>
+<li>The static holder class</li>
+</ul>
+
+<pre><code class="language-csharp">namespace OwinApplication
+{
+  public static class HostingEnvironment
+  {
+	public static string Name { get; set; }
+	public static IUnityContainer DependencyResolver { get; set; }
+  }
+}
+</code></pre>
+
+<ul>
+<li>Global.asax</li>
+</ul>
+
+<pre><code class="language-csharp">protected void Application_Start(object sender, EventArgs e)
+{
+  HostingEnvironment.Name = &quot;AspNet&quot;;
+  var container = new UnityContainer();
+  container.RegisterType&lt;ILogger, Logger&gt;(new ContainerControlledLifetimeManager());
+  HostingEnvironment.DependencyResolver = container;
+}
+</code></pre>
+
+<ul>
+<li>Startup class</li>
+</ul>
+
+<pre><code class="language-csharp">public class Startup
+{
+  public void Configuration(IAppBuilder app)
+  {
+    var dependencyResolver = HostingEnvironment.DependencyResolver;
+    var logger = dependencyResolver.Resolve&lt;Common.ILogger&gt;();
+    app.Run(context =&gt;
+      {
+        var response = string.Format(
+                          CultureInfo.InvariantCulture,
+                          &quot;Current hosting environment is {0}&quot;,
+                          HostingEnvironment.Name);
+        logger.Information(response);
+        context.Response.ContentType = &quot;text/plain&quot;;
+        return context.Response.WriteAsync(response);
+      });
+  }
+}
+</code></pre>
+
+	<nav class="no-print post-nav">
+	
+		<a class="prev-post" href="https://tuan.github.io/blog/cancelable-sendmailasync/">
+			<img class="icon-text" src="/img/prev.svg"/>Cancelable Sendmailasync</a>
+	
+	
+	</nav>
+</article>
+
+
+
+
+	<div id="disqus_thread" class="no-print"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+			<hr class="sep" />
+		</main>
+		<footer class="container no-print">
+			<div class="u-footer">
+				
+
+<a href="https://github.com/tuan/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+
+
+<a href="https://twitter.com/natuan"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+
+<a href="https://tuan.github.io/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+
+				<p>
+					
+					Theme used: <a href="https://github.com/yursan9/manis-hugo-theme">Manis</a><br>
+					
+					
+					&copy; 2018 Tuan Nguyen
+					
+					
+					| <a href="/about/license">License</a>
+					
+				</p>
+				
+				<a href="#brand">
+					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
+					<span>Back to Up</span>
+				</a>
+				
+			</div>
+		</footer>
+		
+		<script>hljs.initHighlightingOnLoad();</script>
+		
+	</body>
+</html>
+

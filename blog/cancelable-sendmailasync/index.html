@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="generator" content="Hugo 0.40.1" />
+		<title>Cancelable Sendmailasync - Tuan</title>
+
+		<meta name="description" content="In .NET, to send emails using the Simple Mail Transfer Protocal we can use the SmtpClient class in System.Net.Mail namespace. There are 3 methods that we can use:
+ Send SendAsync SendMailAsync  The 1st method is a synchronous method. The last 2 methods are asynchronous. I prefer to use async methods most of the time for scalability reason.
+SendMailAsync uses SendAsync internally. It also uses CancellationTokenSource to implement Task-based Asynchronous Pattern.">
+
+
+		
+
+		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+
+		
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/ocean.min.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/go.min.js"></script>
+		
+		
+
+		
+		<link rel="stylesheet" href="/css/ui.min.css"/>
+		
+		<style>
+	a { color: #267A9E; }
+	blockquote {
+		border-left-color: #267A9E;
+		border-right-color: #267A9E; }
+	.bar a:hover {
+		color: #267A9E;
+		text-decoration: none; }
+	.sep {
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		margin-left:0;
+		width: 24rem;
+		border-top: 2px solid #267A9E; }
+</style>
+
+	</head>
+
+<body>
+<header class="container no-print">
+	<div class="u-header">
+		<nav class="bar">
+	<ul><li>
+			<a href="/">
+				<img class="icon-text" src="/img/prev.svg"/>
+			</a>
+		</li></ul>
+</nav>
+
+	</div>
+</header>
+<main class="container">
+
+<article>
+	<header><hgroup id="brand">
+	<h1>Cancelable Sendmailasync</h1>
+	<h5>
+		
+		<time datetime="2018-04-27 20:16:23 -0700 -0700">Apr 27, 2018</time>
+		<span class="no-print">
+			<span>
+	</h5>
+	
+</hgroup>
+<hr class="sep" />
+</header>
+	<p>In .NET, to send emails using the Simple Mail Transfer Protocal we can use the SmtpClient class in System.Net.Mail namespace. There are 3 methods that we can use:</p>
+
+<ol>
+<li>Send</li>
+<li>SendAsync</li>
+<li>SendMailAsync</li>
+</ol>
+
+<p>The 1st method is a synchronous method. The last 2 methods are asynchronous. I prefer to use async methods most of the time for scalability reason.</p>
+
+<p>SendMailAsync uses SendAsync internally. It also uses <a href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtokensource%28v=vs.110%29.aspx">CancellationTokenSource</a> to implement <a href="https://msdn.microsoft.com/en-us/library/hh873177(v=vs.110).aspx">Task-based Asynchronous Pattern</a>.</p>
+
+<p>SendAsync operation can be canceled by calling SendAsyncCancel method, so technically you can use that same method to cancel a request made by SendMailAsync. But it would be nicer if SendMailAsync provides an overload that takes a cancellation token. When the token is canceled, SendAsyncCancel would be invoked automatically to cancel the pending request.</p>
+
+<p>This cancelable version of SendMailAsync could be implemented as following</p>
+
+<pre><code class="language-cs">public class SmtpClientWrapper : IDisposable
+{
+    private SmtpClient _smtpClient;
+
+    public SmtpClientWrapper(SmtpClient smtpClient)
+    {
+        this._smtpClient = smtpClient;
+    }
+
+    public async Task SendMailAsync(MailMessage message, CancellationToken ct)
+    {
+        using (ct.Register(_smtpClient.SendAsyncCancel))
+        {
+            await _smtpClient.SendMailAsync(message);
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool p)
+    {
+        if (_smtpClient != null)
+        {
+            _smtpClient.Dispose();
+            _smtpClient = null;
+        }
+    }
+}
+</code></pre>
+
+<p>However, there&rsquo;s a problem with this implementation of SendMailAsync. What if the passed in cancellation token has already been canceled before entering the method ?</p>
+
+<!-- more -->
+
+<p>If the token is already in the canceled state, SendAsyncCancel will be run immediately and synchronously. And it will succeed, because there&rsquo;s no pending request. As a result, it will not cancel the actual SendMailAsync request that will be invoked later in the method !!</p>
+
+<p>To make sure we cancel the right request, we need to register the callback <em>after</em> we invoke SendMailAsync.</p>
+
+<pre><code class="language-csharp">public async Task SendMailAsync(MailMessage message, CancellationToken ct)
+{
+	try
+	{
+		var task = _smtpClient.SendMailAsync(message);
+		using (ct.Register(_smtpClient.SendAsyncCancel))
+		{
+			try
+			{
+				await task;
+			}
+			catch (OperationCanceledException exception)
+			{
+				if (exception.CancellationToken == ct)
+				{
+					Trace.TraceWarning(&quot;Operation has been canceled.&quot;);
+					return;
+				}
+
+				throw;
+			}
+		}
+	}
+	catch (Exception exception)
+	{
+		Trace.TraceError(&quot;Unexpected exception occured; Exception details: {0}&quot;, exception.ToString());
+	}
+}
+</code></pre>
+
+<p>In this implementation, we start a SendMailAsync first, register the Cancellation callback, then await the SendMailAsync task. If the cancellation token is already in the canceled state before the SendMailAsync method is invoked, we can still cancel it because SendAsyncCancel is registered and invoked after that.</p>
+
+	<nav class="no-print post-nav">
+	
+		<a class="prev-post" href="https://tuan.github.io/blog/deploy-angular-app-to-azure/">
+			<img class="icon-text" src="/img/prev.svg"/>Deploy Angular App to Azure</a>
+	
+	
+		<a class="next-post" href="https://tuan.github.io/blog/pass-data-from-hosting-environment-to-owin-startup-class/">Pass Data From Hosting Environment to Owin Startup Class<img class="icon-text" src="/img/next.svg"/>
+		</a>
+	
+	</nav>
+</article>
+
+
+
+
+	<div id="disqus_thread" class="no-print"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+			<hr class="sep" />
+		</main>
+		<footer class="container no-print">
+			<div class="u-footer">
+				
+
+<a href="https://github.com/tuan/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+
+
+<a href="https://twitter.com/natuan"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+
+<a href="https://tuan.github.io/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+
+				<p>
+					
+					Theme used: <a href="https://github.com/yursan9/manis-hugo-theme">Manis</a><br>
+					
+					
+					&copy; 2018 Tuan Nguyen
+					
+					
+					| <a href="/about/license">License</a>
+					
+				</p>
+				
+				<a href="#brand">
+					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
+					<span>Back to Up</span>
+				</a>
+				
+			</div>
+		</footer>
+		
+		<script>hljs.initHighlightingOnLoad();</script>
+		
+	</body>
+</html>
+

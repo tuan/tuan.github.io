@@ -6,10 +6,30 @@
     <description>Recent content on Tuan</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>&amp;copy; 2018 Tuan Nguyen</copyright>
-    <lastBuildDate>Fri, 27 Apr 2018 19:54:06 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 27 Apr 2018 20:18:28 -0700</lastBuildDate>
     
 	<atom:link href="https://tuan.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Pass Data From Hosting Environment to Owin Startup Class</title>
+      <link>https://tuan.github.io/blog/pass-data-from-hosting-environment-to-owin-startup-class/</link>
+      <pubDate>Fri, 27 Apr 2018 20:18:28 -0700</pubDate>
+      
+      <guid>https://tuan.github.io/blog/pass-data-from-hosting-environment-to-owin-startup-class/</guid>
+      <description>The diagram bellow, from MSDN Magazine, seems to suggest that there are ways to exchange data between Server and Owin Application. However, I have not found any official documentation/tutorials on how that can be accomplished. I found this discussion while searching for this topic on stackoverflow. The answer given there is only for self-hosted scenario, where you can call WebApp.Start method to manually load the Startup class and provide custom data.</description>
+    </item>
+    
+    <item>
+      <title>Cancelable Sendmailasync</title>
+      <link>https://tuan.github.io/blog/cancelable-sendmailasync/</link>
+      <pubDate>Fri, 27 Apr 2018 20:16:23 -0700</pubDate>
+      
+      <guid>https://tuan.github.io/blog/cancelable-sendmailasync/</guid>
+      <description>In .NET, to send emails using the Simple Mail Transfer Protocal we can use the SmtpClient class in System.Net.Mail namespace. There are 3 methods that we can use:
+ Send SendAsync SendMailAsync  The 1st method is a synchronous method. The last 2 methods are asynchronous. I prefer to use async methods most of the time for scalability reason.
+SendMailAsync uses SendAsync internally. It also uses CancellationTokenSource to implement Task-based Asynchronous Pattern.</description>
+    </item>
     
     <item>
       <title>Deploy Angular App to Azure</title>
