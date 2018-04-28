@@ -5,7 +5,7 @@ theme = "manis"
 copyright = "&copy; 2018 Tuan Nguyen"
 pluralizeListTitles = false
 # Minimum number of posts before paginate navigation show up
-paginate = 20
+paginate = 10
 canonifyURL = true
 # Your disqus shortname
 disqusShortname = ""
@@ -44,7 +44,7 @@ publishDir = "docs"
 	# Color of your website's accent
 	colorTheme = "#fc982d"
 	# Maximum number of item in Latest Posts or Works
-	latestCount = 3
+	latestCount = 20
 	# Path to site's favicon image
 	faviconImg = ""
 	# Date format in item list
