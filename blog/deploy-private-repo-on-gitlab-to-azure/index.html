@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="generator" content="Hugo 0.40.1" />
+		<title>Deploy Private Repo on Gitlab to Azure - Tuan</title>
+
+		<meta name="description" content="Here are the steps to deploy your private repository on gitlab to Azure:
+Get Kudu&rsquo;s public deployment key Kudu is the engine behind git deployments in Azure App Service. For Kudu to be able to read from a private git repository, we need to first get its public deployment key.
+ Get the deployment trigger uri On Azure portal, go to your Web app&rsquo;s Properties blade. It looks something like this">
+
+
+		
+
+		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+
+		
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/ocean.min.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/go.min.js"></script>
+		
+		
+
+		
+		<link rel="stylesheet" href="/css/ui.min.css"/>
+		
+		<style>
+	a { color: #267A9E; }
+	blockquote {
+		border-left-color: #267A9E;
+		border-right-color: #267A9E; }
+	.bar a:hover {
+		color: #267A9E;
+		text-decoration: none; }
+	.sep {
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		margin-left:0;
+		width: 24rem;
+		border-top: 2px solid #267A9E; }
+</style>
+
+	</head>
+
+<body>
+<header class="container no-print">
+	<div class="u-header">
+		<nav class="bar">
+	<ul><li>
+			<a href="/">
+				<img class="icon-text" src="/img/prev.svg"/>
+			</a>
+		</li></ul>
+</nav>
+
+	</div>
+</header>
+<main class="container">
+
+<article>
+	<header><hgroup id="brand">
+	<h1>Deploy Private Repo on Gitlab to Azure</h1>
+	<h5>
+		
+		<time datetime="2018-04-27 19:52:21 -0700 -0700">Apr 27, 2018</time>
+		<span class="no-print">
+			<span>
+	</h5>
+	
+</hgroup>
+<hr class="sep" />
+</header>
+	
+
+<p>Here are the steps to deploy your private repository on gitlab to Azure:</p>
+
+<h3 id="get-kudu-s-public-deployment-key">Get Kudu&rsquo;s public deployment key</h3>
+
+<p><a href="https://github.com/projectkudu/kudu">Kudu</a> is the engine behind git deployments in Azure App Service.
+For Kudu to be able to read from a private git repository, we need to first get its public deployment key.</p>
+
+<ol>
+<li><p>Get the deployment trigger uri
+On Azure portal, go to your Web app&rsquo;s Properties blade. It looks something like this</p>
+
+<pre><code>https://$mysite:BigRandomPassword@mysite.scm.azurewebsites.net/deploy
+</code></pre></li>
+
+<li><p>Based on the url, create the following url</p>
+
+<pre><code>https://$mysite:BigRandomPassword@mysite.scm.azurewebsites.net/api/sshkey?ensurePublicKey=1
+</code></pre></li>
+
+<li><p>Open the url created above in browser to get your deployment key. See <a href="https://github.com/projectkudu/kudu/wiki/Continuous-deployment">For private repos, set up a deploy key</a></p></li>
+</ol>
+
+<h3 id="add-kudu-s-deployment-key-to-gitlab-project">Add Kudu&rsquo;s deployment key to Gitlab project</h3>
+
+<p>Add Kudu&rsquo;s deployment key to Gitlab project.</p>
+
+<blockquote>
+<p>If you are a project master or owner, you can add a deploy key in the project settings under the section &lsquo;Repository&rsquo;. Specify a title for the new deploy key and paste a public SSH key. After this, the machine that uses the corresponding private SSH key has read-only or read-write (if enabled) access to the project.
+<cite><a href="https://docs.gitlab.com/ce/ssh/README.html#deploy-keys">https://docs.gitlab.com/ce/ssh/README.html#deploy-keys</a></cite></p>
+</blockquote>
+
+<h3 id="set-up-deployment-source">Set up deployment source</h3>
+
+<p>Follow <a href="https://docs.microsoft.com/en-us/azure/app-service-web/app-service-continuous-deployment">this guide</a>, but choose <strong>External Repository</strong> instead of GitHub.</p>
+
+<h3 id="set-up-auto-deployment">Set up auto deployment</h3>
+
+<p>Register Kudu&rsquo;s deployment trigger url that you found earlier with Gitlab by going to Integrations page for your project</p>
+
+<blockquote>
+<p>Navigate to the webhooks page by going to the Integrations page from your project&rsquo;s settings which can be found under the wheel icon in the upper right corner.
+<cite><a href="https://docs.gitlab.com/ce/user/project/integrations/webhooks.html#webhooks">https://docs.gitlab.com/ce/user/project/integrations/webhooks.html#webhooks</a></cite></p>
+</blockquote>
+
+<p>After this set up is done, every time you push your changes to your remote Gitlab repository, Azure will redeploy your changes automatically.</p>
+
+	<nav class="no-print post-nav">
+	
+		<a class="prev-post" href="https://tuan.github.io/blog/install-openvpn-server-on-azure/">
+			<img class="icon-text" src="/img/prev.svg"/>Install Openvpn Server on Azure</a>
+	
+	
+		<a class="next-post" href="https://tuan.github.io/blog/deploy-angular-app-to-azure/">Deploy Angular App to Azure<img class="icon-text" src="/img/next.svg"/>
+		</a>
+	
+	</nav>
+</article>
+
+
+
+
+	<div id="disqus_thread" class="no-print"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+			<hr class="sep" />
+		</main>
+		<footer class="container no-print">
+			<div class="u-footer">
+				
+
+<a href="https://github.com/tuan/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+
+
+<a href="https://twitter.com/natuan"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+
+<a href="https://tuan.github.io/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+
+				<p>
+					
+					Theme used: <a href="https://github.com/yursan9/manis-hugo-theme">Manis</a><br>
+					
+					
+					&copy; 2018 Tuan Nguyen
+					
+					
+					| <a href="/about/license">License</a>
+					
+				</p>
+				
+				<a href="#brand">
+					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
+					<span>Back to Up</span>
+				</a>
+				
+			</div>
+		</footer>
+		
+		<script>hljs.initHighlightingOnLoad();</script>
+		
+	</body>
+</html>
+

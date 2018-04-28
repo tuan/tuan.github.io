@@ -4,12 +4,12 @@
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="generator" content="Hugo 0.40.1" />
-		<title>Test - Tuan</title>
+		<title>Install Openvpn Server on Azure - Tuan</title>
 
-		<meta name="description" content="this is a test
-This is my first post. Tiếng Việt. Hôm nay là một ngày đẹp trời.
-Testing syntax highlighting
-function hello() { console.log(&#39;world&#39;); }  ">
+		<meta name="description" content="We&rsquo;re going to install OpenVPN Server on a Ubuntu Server VM running on Azure. Steps:
+ Go to portal.azure.com &gt; Marketplace and search for Ubuntu Server.
+ Select a Ubuntu Server image that we want and follow the steps on Azure Portal to create a new VM.
+ I use a cheapest VM size that I can find in the list which is A0. It costs about $4/month. I want the VPN server to be on all the time, so I disable Auto Shutdown option.">
 
 
 		
@@ -62,10 +62,10 @@ function hello() { console.log(&#39;world&#39;); }  ">
 
 <article>
 	<header><hgroup id="brand">
-	<h1>Test</h1>
+	<h1>Install Openvpn Server on Azure</h1>
 	<h5>
 		
-		<time datetime="2018-04-27 07:12:48 -0700 -0700">Apr 27, 2018</time>
+		<time datetime="2018-04-27 19:50:34 -0700 -0700">Apr 27, 2018</time>
 		<span class="no-print">
 			<span>
 	</h5>
@@ -73,22 +73,48 @@ function hello() { console.log(&#39;world&#39;); }  ">
 </hgroup>
 <hr class="sep" />
 </header>
-	<p>this is a test</p>
+	<p>We&rsquo;re going to install OpenVPN Server on a Ubuntu Server VM running on Azure.
+Steps:</p>
 
-<p>This is my first post.
-Tiếng Việt. Hôm nay là một ngày đẹp trời.</p>
+<ol>
+<li><p>Go to portal.azure.com &gt; Marketplace and search for Ubuntu Server.</p></li>
 
-<p>Testing syntax highlighting</p>
+<li><p>Select a Ubuntu Server image that we want and follow the steps on Azure Portal to create a new VM.</p>
 
-<pre><code class="language-javascript">function hello() {
-  console.log('world');
-}
+<ul>
+<li>I use a cheapest VM size that I can find in the list which is A0. It costs about $4/month.</li>
+<li>I want the VPN server to be on all the time, so I disable Auto Shutdown option.</li>
+</ul></li>
+
+<li><p>After the VM is ready, <code>ssh</code> to the server using <code>your-user-name@vm-public-ipaddress</code></p></li>
+
+<li><p>Execute this command</p>
+
+<pre><code>wget https://git.io/vpn -O openvpn-install.sh &amp;&amp; sudo bash ./openvpn-install.sh
 </code></pre>
+
+<ul>
+<li>Use the default IPv4 address of the network insterface.</li>
+<li>Use UDP</li>
+<li>Use port 1194</li>
+<li>Use current system resolver for DNS option</li>
+<li>Your VM is behind a NAT, so specify a external IP address. This is the Public Ip Address that you find in Overview page for your VM. You can also use a public host name, e.g. <code>your-custom-name.westus.cloudapp.azure.com</code>, here instead. This public host name is listed under DNS category in the Overview page, if not specified, you have the option to configure it.</li>
+</ul></li>
+
+<li><p>Copy the output .ovpn file to use on the client later to connect to this vpn server.</p></li>
+
+<li><p>Go to Network Interface resource for your VPN and add an Inbound connection rule to whitelist port 1194 (the port that you chose in step 4)</p></li>
+</ol>
+
+<p>That&rsquo;s it. Now you can test your vpn server by openning the ovpn file in step 5 in a OpenVPN client. I use OpenVPN Connect app on my Android to test. In OpenVPN Connect app, you have an option to import a .ovpn file from SD card which makes it very easy to setup the connection to your server.</p>
 
 	<nav class="no-print post-nav">
 	
+		<a class="prev-post" href="https://tuan.github.io/blog/useful-chrome-extensions-for-github/">
+			<img class="icon-text" src="/img/prev.svg"/>Useful Chrome Extensions for Github</a>
 	
-		<a class="next-post" href="https://tuan.github.io/blog/useful-chrome-extensions-for-github/">Useful Chrome Extensions for Github<img class="icon-text" src="/img/next.svg"/>
+	
+		<a class="next-post" href="https://tuan.github.io/blog/deploy-private-repo-on-gitlab-to-azure/">Deploy Private Repo on Gitlab to Azure<img class="icon-text" src="/img/next.svg"/>
 		</a>
 	
 	</nav>

@@ -6,10 +6,59 @@
     <description>Recent content on Tuan</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>&amp;copy; 2018 Tuan Nguyen</copyright>
-    <lastBuildDate>Fri, 27 Apr 2018 07:12:48 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 27 Apr 2018 19:54:06 -0700</lastBuildDate>
     
 	<atom:link href="https://tuan.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Deploy Angular App to Azure</title>
+      <link>https://tuan.github.io/blog/deploy-angular-app-to-azure/</link>
+      <pubDate>Fri, 27 Apr 2018 19:54:06 -0700</pubDate>
+      
+      <guid>https://tuan.github.io/blog/deploy-angular-app-to-azure/</guid>
+      <description>This is a good guide that explains basic steps to deploy a Angular app to Azure. However, there are a few extra items that you might want to do to have your app run smoothly in production.
+ Generate deployment.cmd
+Instead of using azure-cli, use kuduscript:
+npm install kuduscript -g  and
+kuduscript -y --node  Set up web.config
+&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt; &amp;lt;configuration&amp;gt; &amp;lt;system.webServer&amp;gt; &amp;lt;rewrite&amp;gt; &amp;lt;rules&amp;gt; &amp;lt;clear /&amp;gt; &amp;lt;rule name=&amp;quot;Redirect to https&amp;quot; stopProcessing=&amp;quot;true&amp;quot;&amp;gt; &amp;lt;match url=&amp;quot;.</description>
+    </item>
+    
+    <item>
+      <title>Deploy Private Repo on Gitlab to Azure</title>
+      <link>https://tuan.github.io/blog/deploy-private-repo-on-gitlab-to-azure/</link>
+      <pubDate>Fri, 27 Apr 2018 19:52:21 -0700</pubDate>
+      
+      <guid>https://tuan.github.io/blog/deploy-private-repo-on-gitlab-to-azure/</guid>
+      <description>Here are the steps to deploy your private repository on gitlab to Azure:
+Get Kudu&amp;rsquo;s public deployment key Kudu is the engine behind git deployments in Azure App Service. For Kudu to be able to read from a private git repository, we need to first get its public deployment key.
+ Get the deployment trigger uri On Azure portal, go to your Web app&amp;rsquo;s Properties blade. It looks something like this</description>
+    </item>
+    
+    <item>
+      <title>Install Openvpn Server on Azure</title>
+      <link>https://tuan.github.io/blog/install-openvpn-server-on-azure/</link>
+      <pubDate>Fri, 27 Apr 2018 19:50:34 -0700</pubDate>
+      
+      <guid>https://tuan.github.io/blog/install-openvpn-server-on-azure/</guid>
+      <description>We&amp;rsquo;re going to install OpenVPN Server on a Ubuntu Server VM running on Azure. Steps:
+ Go to portal.azure.com &amp;gt; Marketplace and search for Ubuntu Server.
+ Select a Ubuntu Server image that we want and follow the steps on Azure Portal to create a new VM.
+ I use a cheapest VM size that I can find in the list which is A0. It costs about $4/month. I want the VPN server to be on all the time, so I disable Auto Shutdown option.</description>
+    </item>
+    
+    <item>
+      <title>Useful Chrome Extensions for Github</title>
+      <link>https://tuan.github.io/blog/useful-chrome-extensions-for-github/</link>
+      <pubDate>Fri, 27 Apr 2018 19:47:00 -0700</pubDate>
+      
+      <guid>https://tuan.github.io/blog/useful-chrome-extensions-for-github/</guid>
+      <description>These are the two extensions I found that make browsing code on github a much better experience:
+ Octotree
+ Sourcegraph
+  </description>
+    </item>
     
     <item>
       <title>Test</title>

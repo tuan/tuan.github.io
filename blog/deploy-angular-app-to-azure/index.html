@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="generator" content="Hugo 0.40.1" />
+		<title>Deploy Angular App to Azure - Tuan</title>
+
+		<meta name="description" content="This is a good guide that explains basic steps to deploy a Angular app to Azure. However, there are a few extra items that you might want to do to have your app run smoothly in production.
+ Generate deployment.cmd
+Instead of using azure-cli, use kuduscript:
+npm install kuduscript -g  and
+kuduscript -y --node  Set up web.config
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; &lt;configuration&gt; &lt;system.webServer&gt; &lt;rewrite&gt; &lt;rules&gt; &lt;clear /&gt; &lt;rule name=&quot;Redirect to https&quot; stopProcessing=&quot;true&quot;&gt; &lt;match url=&quot;.">
+
+
+		
+
+		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+
+		
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/ocean.min.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/go.min.js"></script>
+		
+		
+
+		
+		<link rel="stylesheet" href="/css/ui.min.css"/>
+		
+		<style>
+	a { color: #267A9E; }
+	blockquote {
+		border-left-color: #267A9E;
+		border-right-color: #267A9E; }
+	.bar a:hover {
+		color: #267A9E;
+		text-decoration: none; }
+	.sep {
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		margin-left:0;
+		width: 24rem;
+		border-top: 2px solid #267A9E; }
+</style>
+
+	</head>
+
+<body>
+<header class="container no-print">
+	<div class="u-header">
+		<nav class="bar">
+	<ul><li>
+			<a href="/">
+				<img class="icon-text" src="/img/prev.svg"/>
+			</a>
+		</li></ul>
+</nav>
+
+	</div>
+</header>
+<main class="container">
+
+<article>
+	<header><hgroup id="brand">
+	<h1>Deploy Angular App to Azure</h1>
+	<h5>
+		
+		<time datetime="2018-04-27 19:54:06 -0700 -0700">Apr 27, 2018</time>
+		<span class="no-print">
+			<span>
+	</h5>
+	
+</hgroup>
+<hr class="sep" />
+</header>
+	<p>This is a <a href="http://stackoverflow.com/questions/37487046/deploy-angular-2-with-azure-webapp">good guide</a> that explains basic steps to deploy a Angular app to Azure. However, there are a few extra items that you might want to do to have your app run smoothly in production.</p>
+
+<ol>
+<li><p>Generate deployment.cmd</p>
+
+<p>Instead of using azure-cli, use <a href="https://github.com/projectkudu/kudu/wiki/Custom-Deployment-Script">kuduscript</a>:</p>
+
+<pre><code>npm install kuduscript -g
+</code></pre>
+
+<p>and</p>
+
+<pre><code>kuduscript -y --node
+</code></pre></li>
+
+<li><p>Set up web.config</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+    &lt;system.webServer&gt;
+        &lt;rewrite&gt;
+            &lt;rules&gt;
+                &lt;clear /&gt;
+                &lt;rule name=&quot;Redirect to https&quot; stopProcessing=&quot;true&quot;&gt;
+                    &lt;match url=&quot;.*&quot; /&gt;
+                    &lt;conditions&gt;
+                        &lt;add input=&quot;{HTTPS}&quot; pattern=&quot;off&quot; ignoreCase=&quot;true&quot; /&gt;
+                    &lt;/conditions&gt;
+                    &lt;action type=&quot;Redirect&quot; url=&quot;https://{HTTP_HOST}{REQUEST_URI}&quot; redirectType=&quot;Permanent&quot; appendQueryString=&quot;false&quot; /&gt;
+                &lt;/rule&gt;
+                &lt;rule name=&quot;Angular&quot; stopProcessing=&quot;true&quot;&gt;
+                    &lt;match url=&quot;.*&quot; /&gt;
+                    &lt;conditions logicalGrouping=&quot;MatchAll&quot;&gt;
+                        &lt;add input=&quot;{REQUEST_FILENAME}&quot; matchType=&quot;IsFile&quot; negate=&quot;true&quot; /&gt;
+                        &lt;add input=&quot;{REQUEST_FILENAME}&quot; matchType=&quot;IsDirectory&quot; negate=&quot;true&quot; /&gt;
+                    &lt;/conditions&gt;
+                    &lt;action type=&quot;Rewrite&quot; url=&quot;index.html&quot; /&gt;
+                &lt;/rule&gt;
+            &lt;/rules&gt;
+            &lt;outboundRules&gt;
+                &lt;rule name=&quot;AdjustCacheForHTMLPages&quot; preCondition=&quot;IsIndexHTML&quot;&gt;
+                    &lt;match serverVariable=&quot;RESPONSE_Cache-Control&quot; pattern=&quot;.*&quot; /&gt;
+                    &lt;action type=&quot;Rewrite&quot; value=&quot;no-cache, no-store, must-revalidate&quot; /&gt;
+                &lt;/rule&gt;
+                &lt;preConditions&gt;
+                    &lt;preCondition name=&quot;IsIndexHTML&quot;&gt;
+                        &lt;add input=&quot;{REQUEST_FILENAME}&quot; pattern=&quot;index\.html&quot; /&gt;
+                    &lt;/preCondition&gt;
+                &lt;/preConditions&gt;
+            &lt;/outboundRules&gt;
+        &lt;/rewrite&gt;
+    &lt;/system.webServer&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<ul>
+<li><strong>Redirect to https</strong> rule is to make sure <code>https</code> is always used.</li>
+<li><strong>Angular</strong> rule is to make sure all routes are handled by your angular app.</li>
+<li><strong>AdjustCacheForHTMLPages</strong> rule is to make sure your <code>index.html</code> is not cached.
+<code>angular-cli</code>/<code>webpack</code> generates assets with unique guid to bust the cache, but if your <code>index.html</code> is cached, this won&rsquo;t work.</li>
+</ul></li>
+
+<li><p>Create a staging slot</p>
+
+<p>You will eventually need a <a href="https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-staged-publishing">staging slot</a>, otherwise whenever you deploy, your app will not be accessible. This is because if you deploy directly to your <code>production</code> slot, your app might not be functional while <code>angular-cli</code> is building the assets in <code>/dist</code> directory. With the staging slot <a href="https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-staged-publishing#configure-auto-swap">set up to auto swap with production</a>, you only swap the old assets with new assets after the build in your staging slot is completed.</p></li>
+</ol>
+
+	<nav class="no-print post-nav">
+	
+		<a class="prev-post" href="https://tuan.github.io/blog/deploy-private-repo-on-gitlab-to-azure/">
+			<img class="icon-text" src="/img/prev.svg"/>Deploy Private Repo on Gitlab to Azure</a>
+	
+	
+	</nav>
+</article>
+
+
+
+
+	<div id="disqus_thread" class="no-print"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+			<hr class="sep" />
+		</main>
+		<footer class="container no-print">
+			<div class="u-footer">
+				
+
+<a href="https://github.com/tuan/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+
+
+<a href="https://twitter.com/natuan"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+
+<a href="https://tuan.github.io/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+
+				<p>
+					
+					Theme used: <a href="https://github.com/yursan9/manis-hugo-theme">Manis</a><br>
+					
+					
+					&copy; 2018 Tuan Nguyen
+					
+					
+					| <a href="/about/license">License</a>
+					
+				</p>
+				
+				<a href="#brand">
+					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
+					<span>Back to Up</span>
+				</a>
+				
+			</div>
+		</footer>
+		
+		<script>hljs.initHighlightingOnLoad();</script>
+		
+	</body>
+</html>
+
