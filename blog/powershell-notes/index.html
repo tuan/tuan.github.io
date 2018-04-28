@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="generator" content="Hugo 0.40.1" />
+		<title>Powershell Notes - Tuan</title>
+
+		<meta name="description" content="Where-Object (where) Filters objects based on specified search criteria.
+Get-Service | where Status -eq &#39;running&#39;  is equivalent to
+Get-Service | where {$_.Status -eq &#39;running&#39;}  Note: $_ is the current object in the pipeline.
+Comparison operators I find these are the most commonly used operators:
+ -ne (not equal to) -eq (equal to) -like (a wildcard comparison)  If comparison operator is not defined, the where clause returns all objects that have the specified property defined.">
+
+
+		
+
+		<link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Raleway">
+
+		
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/ocean.min.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+		
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/go.min.js"></script>
+		
+		
+
+		
+		<link rel="stylesheet" href="/css/ui.min.css"/>
+		
+		<style>
+	a { color: #033e60; }
+	blockquote {
+		border-left-color: #033e60;
+		border-right-color: #033e60; }
+	.bar a:hover {
+		color: #033e60;
+		text-decoration: none; }
+	.sep {
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+		margin-left:0;
+		width: 24rem;
+		border-top: 2px solid #033e60; }
+</style>
+
+	</head>
+
+<body>
+<header class="container no-print">
+	<div class="u-header">
+		<nav class="bar">
+	<ul><li>
+			<a href="/">
+				<img class="icon-text" src="/img/prev.svg"/>
+			</a>
+		</li></ul>
+</nav>
+
+	</div>
+</header>
+<main class="container">
+
+<article>
+	<header><hgroup id="brand">
+	<h1>Powershell Notes</h1>
+	<h5>
+		
+		<time datetime="2018-04-27 20:28:51 -0700 -0700">Apr 27, 2018</time>
+		<span class="no-print">
+			-
+				
+				<a href="/tags/powershell">powershell</a>
+				<span>
+	</h5>
+	
+</hgroup>
+<hr class="sep" />
+</header>
+	
+
+<h2 id="where-object-where">Where-Object (where)</h2>
+
+<p>Filters objects based on specified search criteria.</p>
+
+<pre><code class="language-powershell">Get-Service | where Status -eq 'running'
+</code></pre>
+
+<p>is equivalent to</p>
+
+<pre><code class="language-powershell">Get-Service | where {$_.Status -eq 'running'}
+</code></pre>
+
+<p>Note: <code>$_</code> is the current object in the pipeline.</p>
+
+<p><a href="https://technet.microsoft.com/en-us/library/hh847759.aspx">Comparison operators</a>
+I find these are the most commonly used operators:</p>
+
+<ul>
+<li>-ne (not equal to)</li>
+<li>-eq (equal to)</li>
+<li>-like (a wildcard comparison)</li>
+</ul>
+
+<p>If comparison operator is not defined, the <code>where</code> clause returns all objects that have the specified property defined.</p>
+
+<h2 id="select-object-select">Select-Object (select)</h2>
+
+<pre><code class="language-powershell">Get-Command | select Name, Version -First 3
+</code></pre>
+
+<h2 id="select-string-sls">Select-String (sls)</h2>
+
+<pre><code class="language-powershell">sls *.yml -Pattern 'hexo' -CaseSensitive -Context 1
+</code></pre>
+
+<p>Performs case sensitive searches for lines that contain pattern <code>hexo</code> in all <code>*.yml</code> files. For each line that matches the pattern also print one line before and after.</p>
+
+<h2 id="foreach-object-foreach-or">ForEach-Object (foreach or %)</h2>
+
+<pre><code class="language-powershell">gci *.yml | %{$_.Name}
+</code></pre>
+
+<h2 id="get-command-gm">Get-Command (gm)</h2>
+
+<p>Lists property of objects in the pipeline</p>
+
+<pre><code class="language-powershell">gci *.yml | gm
+</code></pre>
+
+<p>The output is</p>
+
+<pre><code>   TypeName: System.IO.FileInfo
+
+Name                      MemberType     Definition
+----                      ----------     ----------
+LinkType                  CodeProperty   System.String LinkType{get=GetLinkType;}
+Mode                      CodeProperty   System.String Mode{get=Mode;}
+...
+</code></pre>
+
+<h2 id="send-output-to-clipboard">Send output to clipboard</h2>
+
+<p>Use <code>clip</code> utility</p>
+
+<pre><code class="language-powershell">Get-EventLog application -Newest 1 | clip
+</code></pre>
+
+	<nav class="no-print post-nav">
+	
+		<a class="prev-post" href="https://tuan.github.io/blog/pass-data-from-hosting-environment-to-owin-startup-class/">
+			<img class="icon-text" src="/img/prev.svg"/>Pass Data From Hosting Environment to Owin Startup Class</a>
+	
+	
+	</nav>
+</article>
+
+
+
+
+	<div id="disqus_thread" class="no-print"></div>
+<script type="text/javascript">
+
+(function() {
+    
+    
+    if (window.location.hostname == "localhost")
+        return;
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+			<hr class="sep" />
+		</main>
+		<footer class="container no-print">
+			<div class="u-footer">
+				
+
+<a href="https://github.com/tuan/"><img class="icon-social" src="/img/github.svg" alt="Github"/></a>
+
+
+<a href="https://twitter.com/natuan"><img class="icon-social" src="/img/twitter.svg" alt="Twitter"/></a>
+
+<a href="https://tuan.github.io/index.xml" target="_blank"><img class="icon-social" src="/img/feed.svg" alt="Feed"></a>
+
+				<p>
+					
+					Theme used: <a href="https://github.com/yursan9/manis-hugo-theme">Manis</a><br>
+					
+					
+					&copy; 2018 Tuan Nguyen
+					
+					
+					| <a href="/about/license">License</a>
+					
+				</p>
+				
+				<a href="#brand">
+					<img class="icon-text" src="/img/toup.svg" alt="To Up"/>
+					<span>Back to Up</span>
+				</a>
+				
+			</div>
+		</footer>
+		
+		<script>hljs.initHighlightingOnLoad();</script>
+		
+	</body>
+</html>
+

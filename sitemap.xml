@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://tuan.github.io/blog/powershell-notes/</loc>
+    <lastmod>2018-04-27T20:28:51-07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://tuan.github.io/blog/pass-data-from-hosting-environment-to-owin-startup-class/</loc>
     <lastmod>2018-04-27T20:18:28-07:00</lastmod>
   </url>
@@ -39,18 +44,25 @@
   
   <url>
     <loc>https://tuan.github.io/blog/</loc>
-    <lastmod>2018-04-27T20:18:28-07:00</lastmod>
+    <lastmod>2018-04-27T20:28:51-07:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://tuan.github.io/tags/powershell/</loc>
+    <lastmod>2018-04-27T20:28:51-07:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://tuan.github.io/tags/</loc>
+    <lastmod>2018-04-27T20:28:51-07:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://tuan.github.io/</loc>
-    <lastmod>2018-04-27T20:18:28-07:00</lastmod>
+    <lastmod>2018-04-27T20:28:51-07:00</lastmod>
     <priority>0</priority>
   </url>
   

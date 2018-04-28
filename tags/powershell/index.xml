@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Powershell on Tuan</title>
+    <link>https://tuan.github.io/tags/powershell/</link>
+    <description>Recent content in Powershell on Tuan</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>&amp;copy; 2018 Tuan Nguyen</copyright>
+    <lastBuildDate>Fri, 27 Apr 2018 20:28:51 -0700</lastBuildDate>
+    
+	<atom:link href="https://tuan.github.io/tags/powershell/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Powershell Notes</title>
+      <link>https://tuan.github.io/blog/powershell-notes/</link>
+      <pubDate>Fri, 27 Apr 2018 20:28:51 -0700</pubDate>
+      
+      <guid>https://tuan.github.io/blog/powershell-notes/</guid>
+      <description>Where-Object (where) Filters objects based on specified search criteria.
+Get-Service | where Status -eq &#39;running&#39;  is equivalent to
+Get-Service | where {$_.Status -eq &#39;running&#39;}  Note: $_ is the current object in the pipeline.
+Comparison operators I find these are the most commonly used operators:
+ -ne (not equal to) -eq (equal to) -like (a wildcard comparison)  If comparison operator is not defined, the where clause returns all objects that have the specified property defined.</description>
+    </item>
+    
+  </channel>
+</rss>

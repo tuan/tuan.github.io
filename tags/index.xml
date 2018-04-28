@@ -6,9 +6,19 @@
     <description>Recent content in Tags on Tuan</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>&amp;copy; 2018 Tuan Nguyen</copyright>
+    <lastBuildDate>Fri, 27 Apr 2018 20:28:51 -0700</lastBuildDate>
     
 	<atom:link href="https://tuan.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Powershell</title>
+      <link>https://tuan.github.io/tags/powershell/</link>
+      <pubDate>Fri, 27 Apr 2018 20:28:51 -0700</pubDate>
+      
+      <guid>https://tuan.github.io/tags/powershell/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>
