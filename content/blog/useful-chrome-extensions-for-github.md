@@ -7,5 +7,8 @@ draft: false
 These are the two extensions I found that make browsing code on github a much better experience:
 
 1.  [Octotree](https://chrome.google.com/webstore/detail/octotree/bkhaagjahfmjljalopjnoealnfndnagc)
+    This gives you a folder tree sidebar.
 
 2.  [Sourcegraph](https://chrome.google.com/webstore/detail/sourcegraph-for-github/dgjhfomjieaadpoljlnidmbgkdffpack)
+
+This adds useful feature like jump to definition.
