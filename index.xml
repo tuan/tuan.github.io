@@ -75,9 +75,9 @@ Get Kudu&amp;rsquo;s public deployment key Kudu is the engine behind git deploym
       
       <guid>https://tuan.github.io/blog/useful-chrome-extensions-for-github/</guid>
       <description>These are the two extensions I found that make browsing code on github a much better experience:
- Octotree
+ Octotree This gives you a folder tree sidebar.
  Sourcegraph
-  </description>
+  This adds useful feature like jump to definition.</description>
     </item>
     
     <item>
