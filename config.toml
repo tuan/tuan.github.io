@@ -42,7 +42,7 @@ publishDir = "docs"
 	sub404 = "Back to <a href='/'>Home</a>."
 
 	# Color of your website's accent
-	colorTheme = "#fc982d"
+	colorTheme = "#40afef"
 	# Maximum number of item in Latest Posts or Works
 	latestCount = 20
 	# Path to site's favicon image
