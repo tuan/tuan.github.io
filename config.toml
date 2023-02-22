@@ -2,3 +2,5 @@ baseURL = 'https://tuan.github.io'
 languageCode = 'en-us'
 title = 'Tuan'
 theme = 'mainroad'
+
+googleAnalytics = "G-3FLD1QC0FE"
